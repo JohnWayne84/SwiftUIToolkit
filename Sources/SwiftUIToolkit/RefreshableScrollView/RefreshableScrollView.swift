@@ -15,9 +15,9 @@ public struct RefreshableScrollView<Content: View>: View {
     private let refreshAction: () -> Void
     @Binding private var isRefreshing: Bool
     private let content: Content
-    
     private var vibration: Vibration? = nil
     private var tint: Color = .accentColor
+    private let coordinateSpace: String = "RefreshableScrollView"
     
     @State private var readyToRefresh: Bool = true
     @State private var rotation: Angle = .degrees(0)
@@ -34,14 +34,15 @@ public struct RefreshableScrollView<Content: View>: View {
             RefreshActivityIndicator(indicatorDiameter: threshold * 0.25, isRefreshing: isRefreshing, rotationAngle: rotation, tint: tint)
             ScrollView {
                 ZStack(alignment: .top) {
-                    PositionIndicator(type: .moving)
                     content
+                        .movingScrollViewElement(coordinateSpace: coordinateSpace)
                         .offset(y: contentOffset)
                 }
             }
         }
-        .background(PositionIndicator(type: .fixed))
-        .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
+        .fixedScrollViewElement(coordinateSpace: coordinateSpace)
+        .coordinateSpace(name: coordinateSpace)
+        .onPreferenceChange(FramePreferenceKey.self) { values in
             calculateScrollPosition(values: values)
         }
         .onChange(of: isRefreshing){ state in
@@ -51,10 +52,10 @@ public struct RefreshableScrollView<Content: View>: View {
         }
     }
     
-    private func calculateScrollPosition(values: [RefreshableKeyTypes.Position]) {
+    private func calculateScrollPosition(values: [FramePreferenceData]) {
         DispatchQueue.main.async{
-            let movingBounds = values.first {$0.type == .moving}?.bounds ?? .zero
-            let fixedBounds = values.first {$0.type == .fixed}?.bounds ?? .zero
+            let movingBounds = values.first {$0.type == .moving}?.rect.minY ?? .zero
+            let fixedBounds = values.first {$0.type == .fixed}?.rect.minY ?? .zero
             let scrollOffset = movingBounds - fixedBounds
             rotation = activityIndicatorlRotation(scrollOffset)
             if scrollOffset < threshold/2 {
