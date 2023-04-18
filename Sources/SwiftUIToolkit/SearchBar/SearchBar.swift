@@ -47,7 +47,7 @@ public struct SearchBar: View{
                     Button(action: {
                         search.wrappedValue = ""
                     }, label: {
-                        Image("xmark")
+                        Image("xmark", bundle: .module)
                             .resizable()
                             .scaledToFit()
                             .foregroundColor(elementForegroundColor)

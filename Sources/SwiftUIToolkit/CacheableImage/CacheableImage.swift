@@ -96,7 +96,7 @@ public enum Placeholder {
     
     public var image: Image {
         switch self {
-        case .`default`: return Image("image.empty")
+        case .`default`: return Image("image.empty", bundle: .module)
         case .custom(let image): return Image(image)
         }
     }

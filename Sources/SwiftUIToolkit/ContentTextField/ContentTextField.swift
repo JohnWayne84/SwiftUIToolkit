@@ -127,7 +127,7 @@ public struct ContentTextField: View{
     
     @ViewBuilder
     var eye: some View{
-        Image(isSecured ? "show" : "hide")
+        Image(isSecured ? "show" : "hide", bundle: .module)
             .resizable()
             .scaledToFit()
             .foregroundColor(eyeForegroundColor)
